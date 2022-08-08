@@ -36,7 +36,7 @@ func main() {
 		}
 	}()
 
-	cloudbetCrawler := application.NewCloudbetHander(repo, logger, "***REMOVED***")
+	cloudbetCrawler := application.NewCloudbetHander(repo, logger, "<YOUR_API_KEY>")
 
 	ticker := time.NewTicker(5 * time.Second)
 	exitTicker := make(chan struct{})
