@@ -1,0 +1,4 @@
+package: interfaces
+generate:
+  gin-server: true
+output: ./event.gen.go

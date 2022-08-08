@@ -1,0 +1,4 @@
+package: interfaces
+generate:
+  models: true
+output: ./types.gen.go
