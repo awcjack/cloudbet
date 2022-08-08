@@ -1,0 +1,467 @@
+openapi: 3.1.0
+info:
+  title: Cloudbet record
+  version: 1.0.0
+tags:
+  - name: sport
+    description: Everything about sports
+  - name: competition
+    description: Everything about competitions
+  - name: category
+    description: Everything about categories
+  - name: event
+    description: Everything about events
+paths:
+  /sport:
+    get:
+      tags:
+        - sport
+      summary: List sports
+      description: List all cached sports from cloudbet
+      operationId: listSports
+      parameters:
+        - $ref: '#/components/parameters/First'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sport'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sport/{sportKey}:
+    get:
+      tags:
+        - sport
+      summary: Get sport info
+      description: Get relevant sport info like name, competition count, event count, TRADING_LIVE status time
+      operationId: getSport
+      parameters:
+        - name: sportKey
+          in: path
+          description: sport key
+          required: true
+          schema:
+            type: string
+            example: basketball
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Sport'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /competition:
+    get:
+      tags:
+        - competition
+      summary: List competitions
+      description: List cached competition from cloudbet
+      operationId: listCompetitions
+      parameters:
+        - $ref: '#/components/parameters/First'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SportKey'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  # TODO: show sport and category related info
+                  $ref: '#/components/schemas/Competition'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /competition/{competitionKey}:
+    get:
+      tags:
+        - competition
+      summary: Get competition info
+      description: Get relevant competition info like name, category count, event count
+      operationId: getCompetition
+      parameters:
+        - name: competitionKey
+          in: path
+          description: competition key
+          required: true
+          schema:
+            type: string
+            example: basketball-usa-nba
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Competition'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /category:
+    get:
+      tags:
+        - category
+      summary: List categories
+      description: List cached categories from cloudbet
+      operationId: listCategories
+      parameters:
+        - $ref: '#/components/parameters/First'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SportKey'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /category/{categoryKey}:
+    get:
+      tags:
+        - category
+      summary: Get category info
+      description: Get relevant category info like name, event count
+      operationId: getCategory
+      parameters:
+        - name: categoryKey
+          in: path
+          description: category key
+          required: true
+          schema:
+            type: string
+            example: nba
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /event:
+    get:
+      tags:
+        - event
+      summary: List events
+      description: List cached event from cloudbet
+      operationId: listEvents
+      parameters:
+        - $ref: '#/components/parameters/First'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/SportKey'
+        - $ref: '#/components/parameters/CompetitionKey'
+        - $ref: '#/components/parameters/CategoryKey'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /event/{eventKey}:
+    get:
+      tags:
+        - event
+      summary: Get event info
+      description: Get relevant sport info like name, category count, event count
+      operationId: getEvent
+      parameters:
+        - name: eventKey
+          in: path
+          description: event key
+          required: true
+          schema:
+            type: string
+            example: c7706f-south-east-melbourne-phoenix
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Error query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  parameters:
+    First:
+      name: first
+      in: query
+      required: true
+      description: first n items to be queried
+      schema:
+        type: integer
+        format: int32
+        maximum: 50
+        example: 50
+    Page:
+      name: page
+      in: query
+      required: true
+      # cursor based pagination may better but require longer time to fine tune like indexing and the cursor key handling
+      description: page number
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        example: 2
+    SportKey:
+      name: sport
+      in: query
+      description: sport key for filtering
+      schema:
+        type: string
+        example: basketball
+    CompetitionKey:
+      name: competition
+      in: query
+      description: competition key for filtering
+      schema:
+        type: string
+        example: basketball-usa-nba
+    CategoryKey:
+      name: category
+      in: query
+      description: category key for filtering
+      schema:
+        type: string
+        example: nba
+  schemas:
+    Sport:
+      required:
+        - key
+      type: object
+      properties:
+        key:
+          description: sport key
+          type: string
+          example: basketball
+        name:
+          description: sport name
+          type: string
+          example: Basketball
+        liveTime:
+          description: average time of event stay in trading_live status
+          type: number
+          format: double
+          example: 1.1
+    Competition:
+      required:
+        - key
+      type: object
+      properties:
+        key:
+          description: competition key
+          type: string
+          example: basketball-usa-nba
+        name:
+          description: competition name
+          type: string
+          example: NBA
+    Category:
+      required:
+        - key
+      type: object
+      properties:
+        key:
+          description: category key
+          type: string
+          example: usa
+        name:
+          description: category name
+          type: string
+          example: USA
+    Team:
+      required:
+        - key
+      type: object
+      properties:
+        key:
+          description: team key
+          type: string
+          example: c7706f-south-east-melbourne-phoenix
+        name:
+          description: team name
+          type: string
+          example: SE Melbourne Phoenix
+        abbreviation:
+          description: Abbreviation
+          type: string
+          example: SEM
+        nationality:
+          description: Nationality
+          type: string
+          example: AUS
+    Selection:
+      type: object
+      properties:
+        outcome:
+          type: string
+          example: outcome=Paolo%20Banchero
+        params:
+          type: string
+          example: handicap=-3
+        price:
+          description: price at which bets can be placed on this Selection
+          type: number
+          format: double
+          example: 4.109
+        minStake:
+          description: minimum stake in EUR which can be placed in bets on this Selection
+          type: number
+          format: double
+          example: 0.1
+        maxStake:
+          description: maximum stake in EUR which can be placed in bets on this Selection; market liability = selection max stake * (price - 1);
+          type: number
+          format: double
+          example: 61.78116
+        probability:
+          type: number
+          format: double
+          example: 0.154
+        status:
+          description: SelectionStatus presents the current status for a given selection
+          type: string
+          example: SELECTION_ENABLED
+          enum: [SELECTION_DISABLED, SELECTION_ENABLED]
+        side:
+          description: Side of a selection signals whether a selection is available for back or lay side betting
+          type: string
+          example: BACK
+          enum: [BACK, LAY]
+    Market:
+      type: object
+      properties:
+        submarkets:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/Selection'
+    Event:
+      required:
+        - key
+        - active
+      type: object
+      properties:
+        key:
+          description: event key
+          type: string
+        name:
+          description: event name
+          type: string
+        sport:
+          description: sport info
+          type: object
+          properties:
+            key:
+              description: sport key
+              type: string
+              example: basketball
+            name:
+              description: sport name
+              type: string
+              example: Basketball
+        competition:
+          description: competition
+          type: object
+          properties:
+            key:
+              description: competition key
+              type: string
+              example: basketball-usa-nba
+            name:
+              description: competition name
+              type: string
+              example: NBA
+        category:
+          description: category
+          type: object
+          properties:
+            key:
+              description: category key
+              type: string
+              example: nba
+            name:
+              description: category name
+              type: string
+              example: NBA
+        home:
+          $ref: '#/components/schemas/Team'
+          description: home team
+        away:
+          $ref: '#/components/schemas/Team'
+          description: away team
+        active:
+          type: boolean
+        market:
+          description: market info
+          additionalProperties:
+            $ref: '#/components/schemas/Market'
+        cutOffTime:
+          description: Cut off time
+          type: string
+          example: 2006-01-02T15:04:05Z07:00
+        startTradingLiveTime:
+          description: time that changed status to TRADING_LIVE
+          type: string
+          example: 2006-01-02T15:04:05Z07:00
+        inactiveTime:
+          description: time that changed status to inactive
+          type: string
+          example: 2006-01-02T15:04:05Z07:00
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Data not found
